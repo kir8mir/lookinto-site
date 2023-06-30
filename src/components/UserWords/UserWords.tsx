@@ -128,7 +128,7 @@ export default function UserWords(userWords: any) {
             variant="outlined"
             size="small"
             onClick={handleCheckedRight}
-            disabled={leftChecked.length === 0}
+            disabled={left.length === 0}
             aria-label="move selected right"
           >
             &gt;
