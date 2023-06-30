@@ -14,7 +14,6 @@ export default function AdminPage({ users }: any) {
 
 export async function getServerSideProps() {
   const users = await getAllUsers();
-  console.log("users", users);
   return {
     props: {
       users,

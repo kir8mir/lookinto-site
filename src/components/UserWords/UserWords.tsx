@@ -16,17 +16,20 @@ function intersection(a: readonly number[], b: readonly number[]) {
   return a.filter((value) => b.indexOf(value) !== -1);
 }
 
-export default function UserWords() {
-  const [checked, setChecked] = React.useState<readonly number[]>([]);
-  const [left, setLeft] = React.useState<readonly number[]>([0, 1, 2, 3]);
-  const [center, setCenter] = React.useState<readonly number[]>([
-    10, 11, 12, 13,
-  ]);
-  const [right, setRight] = React.useState<readonly number[]>([4, 5, 6, 7]);
+export default function UserWords(userWords: any) {
+  const [checked, setChecked] = React.useState<any[]>([]);
+
+  const {newUserWords, familiarUserWords, forgottenUserWords} = userWords;
+
+  const [left, setLeft] = React.useState<any[]>(newUserWords);
+  const [center, setCenter] = React.useState<any[]>(familiarUserWords);
+  const [right, setRight] = React.useState<any[]>(forgottenUserWords);
 
   const leftChecked = intersection(checked, left);
   const centerChecked = intersection(checked, center);
   const rightChecked = intersection(checked, right);
+
+  console.log('userWords', userWords);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
@@ -39,11 +42,6 @@ export default function UserWords() {
     }
 
     setChecked(newChecked);
-  };
-
-  const handleAllRight = () => {
-    setRight(right.concat(left));
-    setLeft([]);
   };
 
   const handleCheckedRight = () => {
@@ -64,20 +62,15 @@ export default function UserWords() {
     setChecked(not(checked, rightChecked));
   };
 
-  const handleAllLeft = () => {
-    setLeft(left.concat(right));
-    setRight([]);
-  };
 
   const customList = (items: readonly number[]) => (
     <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
       <List dense component="div" role="list">
-        {items.map((value: number) => {
-          const labelId = `transfer-list-item-${value}-label`;
-
+        {items.map((value: any) => {
+          const labelId = `transfer-list-item-${value.id}-label`;
           return (
             <ListItem
-              key={value}
+              key={value.id}
               role="listitem"
               button
               onClick={handleToggle(value)}
@@ -88,11 +81,11 @@ export default function UserWords() {
                   tabIndex={-1}
                   disableRipple
                   inputProps={{
-                    "aria-labelledby": labelId,
+                    "aria-labelledby": value.id,
                   }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`List item ${value + 1}`} />
+              <ListItemText id={labelId} primary={`${value.title} - ${value.translations[0].title}`} />
             </ListItem>
           );
         })}

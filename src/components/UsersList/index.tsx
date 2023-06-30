@@ -12,7 +12,6 @@ import Link from "next/link";
 export default function UsersList({ users }: any) {
   const [checked, setChecked] = React.useState([1]);
 
-  console.log("users", users);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
