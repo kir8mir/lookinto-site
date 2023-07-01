@@ -5,6 +5,7 @@ import UserWords from "../src/components/UserWords/UserWords";
 import { getAllNewByUserId } from "../src/utils/getAllNewByUserId";
 import { getAllFamiliarByUserId } from "../src/utils/getAllFamiliarByUserId";
 import { getAllForgottenByUserId } from "../src/utils/getAllForgottenByUserId";
+import AddNewWord from "../src/components/AddNewWord/AddNewWord";
 
 export default function Id({
   newUserWords,
@@ -16,13 +17,15 @@ export default function Id({
   const auth = () => {
     //TODO: add auth if no localStorage
     typeof window !== "undefined" &&
-      localStorage.getItem("userId") !== query.id as string &&
+      localStorage.getItem("userId") !== (query.id as string) &&
       localStorage.setItem("userId", query.id as string);
     return query.id as string;
   };
 
   const userId =
-    typeof window !== "undefined" && localStorage.getItem("userId") && localStorage.getItem("userId") === query.id as string
+    typeof window !== "undefined" &&
+    localStorage.getItem("userId") &&
+    localStorage.getItem("userId") === (query.id as string)
       ? localStorage.getItem("userId")
       : auth();
 
@@ -34,6 +37,7 @@ export default function Id({
         familiarUserWords={familiarUserWords}
         forgottenUserWords={forgottenUserWords}
       />
+      <AddNewWord />
     </Main>
   );
 }

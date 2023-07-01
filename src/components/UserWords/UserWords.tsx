@@ -54,7 +54,7 @@ export default function UserWords(userWords: any) {
       status: "familiar",
       userId: localStorage.getItem("userId"),
     });
-    
+
     setChecked(not(checked, leftChecked));
   };
 
@@ -118,7 +118,7 @@ export default function UserWords(userWords: any) {
                 </ListItemIcon>
                 <ListItemText
                   id={labelId}
-                  primary={`${value.title} - ${value.translations[0].title}`}
+                  primary={`${value.title} - ${value.translations[0].title }`}
                 />
               </ListItem>
             </>
