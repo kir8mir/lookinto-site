@@ -7,6 +7,8 @@ import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
+import { Box } from "@mui/system";
+import { Typography } from "@mui/material";
 
 function not(a: readonly number[], b: readonly number[]) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -19,7 +21,7 @@ function intersection(a: readonly number[], b: readonly number[]) {
 export default function UserWords(userWords: any) {
   const [checked, setChecked] = React.useState<any[]>([]);
 
-  const {newUserWords, familiarUserWords, forgottenUserWords} = userWords;
+  const { newUserWords, familiarUserWords, forgottenUserWords } = userWords;
 
   const [left, setLeft] = React.useState<any[]>(newUserWords);
   const [center, setCenter] = React.useState<any[]>(familiarUserWords);
@@ -29,7 +31,7 @@ export default function UserWords(userWords: any) {
   const centerChecked = intersection(checked, center);
   const rightChecked = intersection(checked, right);
 
-  console.log('userWords', userWords);
+  console.log("userWords", userWords);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
@@ -44,24 +46,29 @@ export default function UserWords(userWords: any) {
     setChecked(newChecked);
   };
 
-  const handleCheckedRight = () => {
-    setRight(right.concat(leftChecked));
+  const handleCheckedLeftToCenter = () => {
+    setCenter(center.concat(leftChecked));
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
   };
 
-  const handleCheckedCenter = () => {
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
+  const handleCheckedCenterToRight = () => {
+    setRight(right.concat(centerChecked));
+    setCenter(not(center, centerChecked));
+    setChecked(not(checked, centerChecked));
   };
 
-  const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
+  const handleCheckedCenterToLeft = () => {
+    setLeft(left.concat(centerChecked));
+    setCenter(not(center, centerChecked));
+    setChecked(not(checked, centerChecked));
+  };
+
+  const handleCheckedRightToCenter = () => {
+    setCenter(center.concat(rightChecked));
     setRight(not(right, rightChecked));
     setChecked(not(checked, rightChecked));
   };
-
 
   const customList = (items: readonly number[]) => (
     <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
@@ -69,24 +76,29 @@ export default function UserWords(userWords: any) {
         {items.map((value: any) => {
           const labelId = `transfer-list-item-${value.id}-label`;
           return (
-            <ListItem
-              key={value.id}
-              role="listitem"
-              button
-              onClick={handleToggle(value)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checked.indexOf(value) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    "aria-labelledby": value.id,
-                  }}
+            <>
+              <ListItem
+                key={value.id}
+                role="listitem"
+                button
+                onClick={handleToggle(value)}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    checked={checked.indexOf(value) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{
+                      "aria-labelledby": value.id,
+                    }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  id={labelId}
+                  primary={`${value.title} - ${value.translations[0].title}`}
                 />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={`${value.title} - ${value.translations[0].title}`} />
-            </ListItem>
+              </ListItem>
+            </>
           );
         })}
       </List>
@@ -95,14 +107,18 @@ export default function UserWords(userWords: any) {
 
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
-      <Grid item>{customList(left)}</Grid>
+      <Box>
+        <Typography variant="h6" gutterBottom component="h4">New</Typography>
+        <Grid item>{customList(left)}</Grid>
+      </Box>
+
       <Grid item>
         <Grid container direction="column" alignItems="center">
           <Button
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleCheckedRight}
+            onClick={handleCheckedLeftToCenter}
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
           >
@@ -112,23 +128,26 @@ export default function UserWords(userWords: any) {
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.length === 0}
+            onClick={handleCheckedCenterToLeft}
+            disabled={centerChecked.length === 0}
             aria-label="move selected left"
           >
             &lt;
           </Button>
         </Grid>
       </Grid>
+      <Box>
+        <Typography variant="h6" gutterBottom component="h4">Familiar</Typography>
       <Grid item>{customList(center)}</Grid>
+      </Box>
       <Grid item>
         <Grid container direction="column" alignItems="center">
           <Button
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleCheckedRight}
-            disabled={left.length === 0}
+            onClick={handleCheckedCenterToRight}
+            disabled={centerChecked.length === 0}
             aria-label="move selected right"
           >
             &gt;
@@ -137,7 +156,7 @@ export default function UserWords(userWords: any) {
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleCheckedLeft}
+            onClick={handleCheckedRightToCenter}
             disabled={rightChecked.length === 0}
             aria-label="move selected left"
           >
@@ -145,7 +164,10 @@ export default function UserWords(userWords: any) {
           </Button>
         </Grid>
       </Grid>
+      <Box>
+        <Typography variant="h6" gutterBottom component="h4">Forgotten</Typography>
       <Grid item>{customList(right)}</Grid>
+      </Box>
     </Grid>
   );
 }
