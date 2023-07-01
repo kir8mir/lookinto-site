@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
+import { changeWordStatus } from "../../utils/changeWordStatus";
 
 function not(a: readonly number[], b: readonly number[]) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -31,8 +32,6 @@ export default function UserWords(userWords: any) {
   const centerChecked = intersection(checked, center);
   const rightChecked = intersection(checked, right);
 
-  console.log("userWords", userWords);
-
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
@@ -49,6 +48,13 @@ export default function UserWords(userWords: any) {
   const handleCheckedLeftToCenter = () => {
     setCenter(center.concat(leftChecked));
     setLeft(not(left, leftChecked));
+
+    changeWordStatus({
+      words: [...checked],
+      status: "familiar",
+      userId: localStorage.getItem("userId"),
+    });
+    
     setChecked(not(checked, leftChecked));
   };
 
@@ -56,18 +62,35 @@ export default function UserWords(userWords: any) {
     setRight(right.concat(centerChecked));
     setCenter(not(center, centerChecked));
     setChecked(not(checked, centerChecked));
+    changeWordStatus({
+      words: [...checked],
+      status: "forgotten",
+      userId: localStorage.getItem("userId"),
+    });
   };
 
   const handleCheckedCenterToLeft = () => {
     setLeft(left.concat(centerChecked));
     setCenter(not(center, centerChecked));
     setChecked(not(checked, centerChecked));
+
+    changeWordStatus({
+      words: [...checked],
+      status: "new",
+      userId: localStorage.getItem("userId"),
+    });
   };
 
   const handleCheckedRightToCenter = () => {
     setCenter(center.concat(rightChecked));
     setRight(not(right, rightChecked));
     setChecked(not(checked, rightChecked));
+
+    changeWordStatus({
+      words: [...checked],
+      status: "familiar",
+      userId: localStorage.getItem("userId"),
+    });
   };
 
   const customList = (items: readonly number[]) => (
@@ -108,7 +131,9 @@ export default function UserWords(userWords: any) {
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       <Box>
-        <Typography variant="h6" gutterBottom component="h4">New</Typography>
+        <Typography variant="h6" gutterBottom component="h4">
+          New
+        </Typography>
         <Grid item>{customList(left)}</Grid>
       </Box>
 
@@ -137,8 +162,10 @@ export default function UserWords(userWords: any) {
         </Grid>
       </Grid>
       <Box>
-        <Typography variant="h6" gutterBottom component="h4">Familiar</Typography>
-      <Grid item>{customList(center)}</Grid>
+        <Typography variant="h6" gutterBottom component="h4">
+          Familiar
+        </Typography>
+        <Grid item>{customList(center)}</Grid>
       </Box>
       <Grid item>
         <Grid container direction="column" alignItems="center">
@@ -165,8 +192,10 @@ export default function UserWords(userWords: any) {
         </Grid>
       </Grid>
       <Box>
-        <Typography variant="h6" gutterBottom component="h4">Forgotten</Typography>
-      <Grid item>{customList(right)}</Grid>
+        <Typography variant="h6" gutterBottom component="h4">
+          Forgotten
+        </Typography>
+        <Grid item>{customList(right)}</Grid>
       </Box>
     </Grid>
   );
